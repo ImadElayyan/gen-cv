@@ -14,7 +14,7 @@ var system_prompt = `You are an AI assistant focused on delivering brief product
 
 const TTSVoice = "en-US-JennyMultilingualNeural" // Update this value if you want to use a different voice
 
-const CogSvcRegion = "switzerlandnorth" // Fill your Azure cognitive services region here, e.g. westus2
+const CogSvcRegion = "westeurope" // Fill your Azure cognitive services region here, e.g. westus2
 
 const IceServerUrl = "turn:relay.communication.microsoft.com:3478" // Fill your ICE server URL here, e.g. turn:turn.azure.com:3478
 let IceServerUsername
@@ -116,7 +116,7 @@ function setupWebRTC() {
       // Set local description
       peerConnection.createOffer().then(sdp => {
         peerConnection.setLocalDescription(sdp).then(() => { setTimeout(() => { connectToAvatarService() }, 1000) })
-      }).catch(console.log)
+      }) //.catch(console.log)
     })  
 }
 
@@ -193,6 +193,7 @@ function connectToAvatarService() {
 
   // Callback function to handle the response from TTS Avatar API
   const complete_cb = function (result) {
+    console.log("result" + JSON.stringify(result));
     const sdp = result.properties.getProperty(SpeechSDK.PropertyId.TalkingAvatarService_WebRTC_SDP)
     if (sdp === undefined) {
       console.log("Failed to get remote SDP. The avatar instance is temporarily unavailable. Result ID: " + result.resultId)
@@ -207,7 +208,7 @@ function connectToAvatarService() {
     console.log(cancellationDetails)
     document.getElementById('startSession').disabled = false
   }
-
+  console.log(JSON.stringify(clientRequest));
   // Call TTS Avatar API
   speechSynthesizer.setupTalkingAvatarAsync(JSON.stringify(clientRequest), complete_cb, error_cb)
 }
@@ -306,7 +307,7 @@ window.stopSession = () => {
 }
 
 window.startRecording = () => {
-  const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, 'switzerlandnorth');
+  const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, 'westeurope');
   speechConfig.authorizationToken = token;
   speechConfig.SpeechServiceConnection_LanguageIdMode = "Continuous";
   var autoDetectSourceLanguageConfig = SpeechSDK.AutoDetectSourceLanguageConfig.fromLanguages(supported_languages);
