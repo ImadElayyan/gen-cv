@@ -104,8 +104,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     messages = json.loads(req.get_body())
-
+    logging.info("Messages:" +  json.dumps(messages))
     response = chat_complete(messages, functions= functions, function_call= "auto")
+    
+    logging.info("response:" + json.dumps(response))
 
     products = []
     
@@ -304,7 +306,7 @@ def display_product_info(product_info, display_size=40):
     # Show image
     image_file = product_info['product_image_file']
 
-    image_url = blob_sas_url.split("?")[0] + f"/{image_file}?" + blob_sas_url.split("?")[1]
+    image_url = blob_sas_url.split("?")[0] + f"{image_file}" #+ blob_sas_url.split("?")[1]
 
     response = requests.get(image_url)
     print(image_url)
