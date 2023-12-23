@@ -20,6 +20,8 @@ const IceServerUrl = "turn:relay.communication.microsoft.com:3478" // Fill your 
 let IceServerUsername
 let IceServerCredential
 
+let account_id = 1000 // Fill your account id here, e.g. 1000
+
 // This is the only avatar which supports live streaming so far, please don't modify
 const TalkingAvatarCharacter = "lisa"
 const TalkingAvatarStyle = "casual-sitting"
@@ -124,7 +126,7 @@ async function generateText(prompt) {
 
   messages.push({
     role: 'user',
-    content: prompt
+    content: prompt + " Account id: " + account_id
   });
 
   let generatedText
@@ -214,6 +216,11 @@ function connectToAvatarService() {
 }
 
 window.startSession = () => {
+
+  
+  
+
+
   // Create the <i> element
   var iconElement = document.createElement("i");
   iconElement.className = "fa fa-spinner fa-spin";
@@ -223,6 +230,27 @@ window.startSession = () => {
 
   speechSynthesisConfig.speechSynthesisVoiceName = TTSVoice
   document.getElementById('playVideo').className = "round-button-hide"
+
+  let txtUsername = document.getElementById('txtUserName');
+    username = txtUsername.value;
+  password = "123456";
+  console.info(username);
+
+  fetch("/api/login?username="+username+"&pass="+password, {
+    method: "POST"
+  })
+    .then(response => response.text())
+    .then(response => {
+      console.log(response);
+      // Parse the outer JSON
+      let parsedResponse = JSON.parse(response);
+
+      // Parse the inner JSON in the 'messages' field
+      let messages = JSON.parse(parsedResponse.messages);
+
+      // Get the account_id
+      account_id = messages.account_id;
+    })
 
   fetch("/api/getSpeechToken", {
     method: "POST"
@@ -236,6 +264,7 @@ window.startSession = () => {
       speechSynthesizer = new SpeechSDK.SpeechSynthesizer(speechSynthesisConfig, null)
       requestAnimationFrame(setupWebRTC)
     })
+
 
   
   // setupWebRTC()
